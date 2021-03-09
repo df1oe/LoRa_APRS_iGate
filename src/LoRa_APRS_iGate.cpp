@@ -486,7 +486,7 @@ void setup_lora()
 	BeaconMsg->setDestination("APLG0");
 	String lat = create_lat_aprs(Config.beacon.positionLatitude);
 	String lng = create_long_aprs(Config.beacon.positionLongitude);
-	BeaconMsg->getAPRSBody()->setData(String("=") + lat + "I" + lng + "&" + Config.beacon.message);
+	BeaconMsg->getAPRSBody()->setData(String("=") + lat + Config.beacon.symbol + lng + Config.beacon.overlay + Config.beacon.message);
 }
 
 void setup_ntp()
