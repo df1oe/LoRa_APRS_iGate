@@ -201,6 +201,8 @@ void loop()
 			return;
 		}
 		logPrintlnI("Connected to APRS-IS server!");
+		show_display("INFO","Connected to APRS-IS server.");
+		delay(5000);
 	}
 	if(Config.aprs_is.active && aprs_is->available() > 0)
 	{
@@ -499,7 +501,7 @@ void setup_lora()
 	BeaconMsg->setDestination("APLG0");
 	String lat = create_lat_aprs(Config.beacon.positionLatitude);
 	String lng = create_long_aprs(Config.beacon.positionLongitude);
-	BeaconMsg->getAPRSBody()->setData(String("=") + lat + Config.beacon.symbol + lng + Config.beacon.overlay + Config.beacon.message);
+	BeaconMsg->getAPRSBody()->setData(String("=") + lat + Config.beacon.overlay + lng + Config.beacon.symbol + Config.beacon.message);
 }
 
 void setup_ntp()
