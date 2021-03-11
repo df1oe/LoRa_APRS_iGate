@@ -30,8 +30,8 @@ public:
 	class Beacon
 	{
 	public:
-		Beacon() : message("LoRa iGATE & Digi, Info: github.com/peterus/LoRa_APRS_iGate"), symbol("&"), overlay("I"), positionLatitude(0.0), positionLongitude(0.0) {}
-
+		Beacon() : message("LoRa iGATE & Digi, Info: github.com/peterus/LoRa_APRS_iGate"), symbol("&"), overlay("I") ,positionLatitude(0.0), positionLongitude(0.0) {}
+		
 		String message;
 		String symbol;
 		String overlay;
@@ -102,6 +102,15 @@ public:
 		std::list<User> users;
 	};
 
+	class MessageStack
+	{
+		public:
+			bool active;
+			int maxentries;
+			bool savetofile;
+			String filename;
+	};
+
 	Configuration() : callsign("NOCALL-10") {};
 
 	String callsign;
@@ -112,6 +121,8 @@ public:
 	LoRa lora;
 	Display display;
 	Ftp ftp;
+	MessageStack messagestack;
+	
 };
 
 class ConfigurationManagement

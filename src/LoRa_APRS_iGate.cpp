@@ -213,7 +213,10 @@ void loop()
 		std::shared_ptr<APRSMessage> msg = lora_aprs.getMessage();
 
 		setup_display(); secondsSinceDisplay = 0; display_is_on = true;
-		show_display(Config.callsign, timeClient.getFormattedTime() + "         LoRa", "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()), msg->toString());
+		if (Config.messagestack.active)
+			show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()) );	
+			else
+		show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) , msg->toString() );	
 		logPrintD("[" + timeClient.getFormattedTime() + "] ");
 		logPrintD(" Received packet '");
 		logPrintD(msg->toString());
@@ -224,6 +227,12 @@ void loop()
 
 		if(Config.aprs_is.active)
 		{
+			// APRSBody * body = msg->getAPRSBody();
+			// String bodyStr = body->getData();
+			// bodyStr = bodyStr + " - Signal at " + Config.callsign + ": RSSI=" + String(lora_aprs.packetRssi()) +"dBm SNR=" + String(lora_aprs.packetSnr()) + "dB\n";	
+			// body->setData(bodyStr);
+			// logPrintD(" Changed packet: ");
+			// logPrintD(msg->toString());
 			aprs_is->sendMessage(msg->encode());
 		}
 		if(Config.digi.active)
@@ -253,8 +262,12 @@ void loop()
 
 			if(foundMsg == lastMessages.end())
 			{
+				String source = msg->getSource();
 				setup_display(); secondsSinceDisplay = 0; display_is_on = true;
-				show_display(Config.callsign, "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()), msg->toString(), 0);
+			if (Config.messagestack.active)
+				show_display(Config.callsign, source, "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()));
+				else
+				show_display(Config.callsign, source, "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) + msg->toString());
 				logPrintD("Received packet '");
 				logPrintD(msg->toString());
 				logPrintD("' with RSSI ");
@@ -420,7 +433,7 @@ void setup_wifi()
 	logPrintlnI("WiFi connected");
 	logPrintD("IP address: ");
 	logPrintlnD(WiFi.localIP().toString());
-	show_display("INFO", "WiFi connected", "IP: ", WiFi.localIP().toString(), 2000);
+	show_display("INFO", "WiFi connected", "IP: " + WiFi.localIP().toString(), 2000);
 }
 #endif
 

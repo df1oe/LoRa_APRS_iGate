@@ -31,8 +31,8 @@ Configuration ConfigurationManagement::readConfiguration()
 	{
 		logPrintlnW("Failed to read file, using default configuration.");
 	}
-	//serializeJson(data, Serial);
-	//Serial.println();
+	serializeJson(data, Serial);
+	Serial.println();
 	file.close();
 
 	Configuration conf;
@@ -50,9 +50,8 @@ Configuration ConfigurationManagement::readConfiguration()
 	}
 	if(data.containsKey("beacon") && data["beacon"].containsKey("message"))
 		conf.beacon.message			= data["beacon"]["message"].as<String>();
-		conf.beacon.symbol			= data["beacon"]["symbol"].as<String>();
-		conf.beacon.overlay			= data["beacon"]["overlay"].as<String>();
-		
+		conf.beacon.symbol          = data["beacon"]["symbol"].as<String>();
+		conf.beacon.overlay          = data["beacon"]["overlay"].as<String>();
 	conf.beacon.positionLatitude	= data["beacon"]["position"]["latitude"]	| 0.0;
 	conf.beacon.positionLongitude	= data["beacon"]["position"]["longitude"]	| 0.0;
 	conf.aprs_is.active				= data["aprs_is"]["active"]					| false;
@@ -77,7 +76,9 @@ Configuration ConfigurationManagement::readConfiguration()
 	conf.display.alwaysOn			= data["display"]["always_on"]				| true;
 	conf.display.timeout			= data["display"]["timeout"]				| 10;
 	conf.display.overwritePin		= data["display"]["overwrite_pin"]			| 0;
-
+    
+	conf.messagestack.active 		= data["messagestack"]["active"]			| false;
+	
 	conf.ftp.active					= data["ftp"]["active"]						| false;
 	JsonArray users					= data["ftp"]["user"].as<JsonArray>();
 	for(JsonVariant u : users)
@@ -96,7 +97,7 @@ Configuration ConfigurationManagement::readConfiguration()
 	}
 
 	// update config in memory to get the new fields:
-	writeConfiguration(conf);
+	// writeConfiguration(conf);
 
 	return conf;
 }
@@ -144,6 +145,7 @@ void ConfigurationManagement::writeConfiguration(Configuration conf)
 	data["display"]["always_on"]			= conf.display.alwaysOn;
 	data["display"]["timeout"]				= conf.display.timeout;
 	data["display"]["overwrite_pin"]		= conf.display.overwritePin;
+	data["messagestack"]["active"]			= conf.messagestack.active;
 	data["ftp"]["active"]					= conf.ftp.active;
 	JsonArray users = data["ftp"].createNestedArray("user");
 	for(Configuration::Ftp::User u : conf.ftp.users)

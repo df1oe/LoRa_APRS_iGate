@@ -1,27 +1,30 @@
 {
-	"callsign":"NOCALL-10",
+	"callsign":"DF1OE-L4",
 	"wifi":
 	{
-		"active":false,
+		"active":true,
 		"AP": [
-			{ "SSID":"YOURSSID", "password":"YOURPASSWORD" }
+			{ "SSID":"DF1OE@JO42UJ", "password":"40683742350238290821" },
+            { "SSID":"DF1OE-H48", "password":"hamRadio4all" },
+            { "SSID":"DF1OE/m", "password":"dataRadio#"}
 		]
 	},
 	"beacon":
 	{
-		"message":"LoRa iGATE & Digi, Info: github.com/peterus/LoRa_APRS_iGate",
+		"message":"LoRa iGATE DF1OE, Info: github.com/peterus/LoRa_APRS_iGate",
 		"symbol":"&",
-		"overlay": "I",
+		"overlay": "R",
 		"position":
 		{
-			"latitude":0.000000,
-			"longitude":0.000000
+			"latitude":52.390212,
+			"longitude":9.745379
 		}
 	},
 	"aprs_is":
 	{
-		"active":false,
-		"password":"",
+		"active":true,
+		"user":"DF1OE",
+		"password":"17387",
 		"server":"euro.aprs2.net",
 		"port":14580,
 		"beacon":true,
@@ -31,7 +34,7 @@
 	{
 		"active":false,
 		"forward_timeout":5,
-		"beacon":true,
+		"beacon":false,
 		"beacon_timeout":30
 	},
 	"lora":
@@ -48,6 +51,10 @@
 		"always_on": true,
 		"timeout":10,
 		"overwrite_pin":0
+	},
+	"messagestack": 
+	{
+		"active":true
 	},
 	"ftp":
 	{
