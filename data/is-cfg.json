@@ -4,14 +4,12 @@
 	{
 		"active":true,
 		"AP": [
-			{ "SSID":"DF1OE@JO42UJ", "password":"40683742350238290821" },
-            { "SSID":"DF1OE-H48", "password":"hamRadio4all" },
-            { "SSID":"DF1OE/m", "password":"dataRadio#"}
+			{ "SSID":"XXXXXXX", "password":"XXXXXXXX" },
 		]
 	},
 	"beacon":
 	{
-		"message":"LoRa iGATE DF1OE, Info: github.com/peterus/LoRa_APRS_iGate",
+		"message":"LoRa iGATE XX1XX, Info: github.com/peterus/LoRa_APRS_iGate",
 		"symbol":"&",
 		"overlay": "R",
 		"position":
@@ -23,8 +21,8 @@
 	"aprs_is":
 	{
 		"active":true,
-		"user":"DF1OE",
-		"password":"17387",
+		"user":"XXXXX",
+		"password":"XXXXXXX",
 		"server":"euro.aprs2.net",
 		"port":14580,
 		"beacon":true,
