@@ -44,6 +44,7 @@ volatile bool eth_connected = false;
 
 String create_lat_aprs(double lat);
 String create_long_aprs(double lng);
+String extract_data_from_message_data(std::shared_ptr<APRSMessage> msg);
 
 #ifdef ETH_BOARD
 void setup_eth();
@@ -87,8 +88,8 @@ void setup()
 	logPrintlnA("Version: 20.49.0-dev");
 	setup_display();
 	show_display("OE5BPA", "LoRa APRS iGate & Digi", "by Peter Buchegger", "20.49.0-dev", 3000);
-
-	load_config();
+    load_config();
+	show_display("Frequency", "Rx: " + String(Config.lora.frequencyRx), "Tx:", String(Config.lora.frequencyTx), 3000);
 	setup_lora();
 #ifdef ETH_BOARD
 	setup_eth();
@@ -210,13 +211,17 @@ void loop()
 		logPrintD("[" + timeClient.getFormattedTime() + "] ");
 		logPrintlnD(str);
 	}
+	
 	if(lora_aprs.hasMessage())
 	{
 		std::shared_ptr<APRSMessage> msg = lora_aprs.getMessage();
 
 		setup_display(); secondsSinceDisplay = 0; display_is_on = true;
 		if (Config.messagestack.active)
-			show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()) );	
+		{
+		//	show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()) );	
+			show_display(Config.callsign, msg->getSource(), "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()), extract_data_from_message_data(msg));
+		}		
 			else
 		show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) , msg->toString() );	
 		logPrintD("[" + timeClient.getFormattedTime() + "] ");
@@ -229,12 +234,22 @@ void loop()
 
 		if(Config.aprs_is.active)
 		{
-			// APRSBody * body = msg->getAPRSBody();
-			// String bodyStr = body->getData();
-			// bodyStr = bodyStr + " - Signal at " + Config.callsign + ": RSSI=" + String(lora_aprs.packetRssi()) +"dBm SNR=" + String(lora_aprs.packetSnr()) + "dB\n";	
-			// body->setData(bodyStr);
-			// logPrintD(" Changed packet: ");
-			// logPrintD(msg->toString());
+			if (Config.inject_data.active)
+			{
+			logPrintI("Extending packet...");
+			APRSBody * body = msg->getAPRSBody();
+			String bodyStr = body->getData();
+			String data = "";
+			if (Config.inject_data.rssi)
+			data += " RSSI=" + String(lora_aprs.packetRssi()) +"dBm ";
+			if (Config.inject_data.snr)
+			data += "SNR=" + String(lora_aprs.packetSnr()) + "dB ";	
+			
+			bodyStr.replace("{data}",data);	
+			body->setData(bodyStr);
+			logPrintI(" Changed packet: ");
+			logPrintI(msg->toString());
+			}
 			aprs_is->sendMessage(msg->encode());
 		}
 		if(Config.digi.active)
@@ -267,7 +282,7 @@ void loop()
 				String source = msg->getSource();
 				setup_display(); secondsSinceDisplay = 0; display_is_on = true;
 			if (Config.messagestack.active)
-				show_display(Config.callsign, source, "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()));
+				show_display(Config.callsign, source, "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()), extract_data_from_message_data(msg));
 				else
 				show_display(Config.callsign, source, "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) + msg->toString());
 				logPrintD("Received packet '");
@@ -582,4 +597,28 @@ String create_long_aprs(double lng)
 	sprintf(str, "%03d%05.2f%c", (int)lng, (lng - (double)((int)lng)) * 60.0, e_w);
 	String lng_str(str);
 	return lng_str;
+}
+
+String extract_data_from_message_data(std::shared_ptr<APRSMessage> msg)
+{
+	APRSBody * body = msg->getAPRSBody();
+	String bodyStr = body->toString();
+	int pos_bat = bodyStr.indexOf("Bat") ;
+	int pos_cur = bodyStr.indexOf("Cur");
+	int pos_sat = bodyStr.indexOf("Sats");
+	String amps = "";
+	String bat = "";
+	String sats = ""; 
+	if (pos_bat != -1)
+	bat = bodyStr.substring(pos_bat,pos_bat+12); 
+	
+	if (pos_cur != -1) 
+	amps = bodyStr.substring(pos_cur,pos_cur+12);
+	
+	if (pos_sat != -1)
+	sats = bodyStr.substring(pos_sat,pos_sat+8);
+	
+	String result = bat + " " + amps + " " + sats;
+	logPrintlnI(result);
+	return result;
 }

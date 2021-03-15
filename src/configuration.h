@@ -111,6 +111,14 @@ public:
 			String filename;
 	};
 
+	class Inject_Data
+	{
+		public:
+		bool active;
+		bool rssi;
+		bool snr;
+	};
+
 	Configuration() : callsign("NOCALL-10") {};
 
 	String callsign;
@@ -122,6 +130,7 @@ public:
 	Display display;
 	Ftp ftp;
 	MessageStack messagestack;
+	Inject_Data inject_data;
 	
 };
 

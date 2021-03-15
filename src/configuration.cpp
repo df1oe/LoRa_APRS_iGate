@@ -76,9 +76,10 @@ Configuration ConfigurationManagement::readConfiguration()
 	conf.display.alwaysOn			= data["display"]["always_on"]				| true;
 	conf.display.timeout			= data["display"]["timeout"]				| 10;
 	conf.display.overwritePin		= data["display"]["overwrite_pin"]			| 0;
-    
+    if (data.containsKey("messagestack"))
+	{
 	conf.messagestack.active 		= data["messagestack"]["active"]			| false;
-	
+	}
 	conf.ftp.active					= data["ftp"]["active"]						| false;
 	JsonArray users					= data["ftp"]["user"].as<JsonArray>();
 	for(JsonVariant u : users)
@@ -95,7 +96,12 @@ Configuration ConfigurationManagement::readConfiguration()
 		us.password					= "ftp";
 		conf.ftp.users.push_back(us);
 	}
-
+if (data.containsKey("inject_data"))
+	{
+	conf.inject_data.active 		= data["inject_data"]["active"]			| false;
+	conf.inject_data.rssi 			= data["inject_data"]["rssi"]			| false;
+	conf.inject_data.snr 			= data["inject_data"]["snr"]			| false;
+	}
 	// update config in memory to get the new fields:
 	// writeConfiguration(conf);
 
@@ -147,6 +153,11 @@ void ConfigurationManagement::writeConfiguration(Configuration conf)
 	data["display"]["overwrite_pin"]		= conf.display.overwritePin;
 	data["messagestack"]["active"]			= conf.messagestack.active;
 	data["ftp"]["active"]					= conf.ftp.active;
+	data["inject_data"]["active"]			= conf.inject_data.active;
+	data["inject_data"]["rssi"]				= conf.inject_data.rssi;
+	data["inject_data"]["snr"]				= conf.inject_data.snr;
+	
+	
 	JsonArray users = data["ftp"].createNestedArray("user");
 	for(Configuration::Ftp::User u : conf.ftp.users)
 	{
