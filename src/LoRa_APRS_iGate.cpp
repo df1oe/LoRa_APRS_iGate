@@ -89,7 +89,7 @@ void setup()
 	setup_display();
 	show_display("OE5BPA", "LoRa APRS iGate & Digi", "by Peter Buchegger", "20.49.0-dev", 3000);
     load_config();
-	show_display("Frequency", "Rx: " + String(Config.lora.frequencyRx), "Tx:", String(Config.lora.frequencyTx), 3000);
+	show_display("Frequency", "Rx: " + String(Config.lora.frequencyRx), "Tx: "+ String(Config.lora.frequencyTx), 3000);
 	setup_lora();
 #ifdef ETH_BOARD
 	setup_eth();
@@ -219,11 +219,11 @@ void loop()
 		setup_display(); secondsSinceDisplay = 0; display_is_on = true;
 		if (Config.messagestack.active)
 		{
-		//	show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()) );	
-			show_display(Config.callsign, msg->getSource(), "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()), extract_data_from_message_data(msg));
+			show_display(Config.callsign , msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + " SNR: " + String(lora_aprs.packetSnr()), extract_data_from_message_data(msg));
 		}		
-			else
-		show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) , msg->toString() );	
+		else
+			show_display(Config.callsign, msg->getSource() + "    " + timeClient.getFormattedTime() + " ", "RSSI: " + String(lora_aprs.packetRssi()) + ", SNR: " + String(lora_aprs.packetSnr()) , msg->toString() );	
+		
 		logPrintD("[" + timeClient.getFormattedTime() + "] ");
 		logPrintD(" Received packet '");
 		logPrintD(msg->toString());
